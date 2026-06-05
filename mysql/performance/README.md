@@ -124,6 +124,7 @@ create table users (
 ```
 
 ##### 더미데이터 생성
+- `100만건`으로 현재 컴퓨터에서는 비교 어려움
 ```sql
 /* CTE 사용방식 */
 -- 재귀호출 회수를 설정, 100만건
@@ -143,6 +144,8 @@ select CONCAT('User_', LPAD(n, 7, '0')) -- 7자리 User_0000001 ~ User_999999
 -- 더미데이터 확인
 select * from users;
 ```
+
+- count()에서의 영향이 지대함
 
 ##### 인덱스 생성
 ```sql
@@ -180,12 +183,33 @@ create table users (
 
 -- 임시데이터 삽입
 
-INSERT INTO users (id, name) VALUES 
-	(1, 'aaa'),
-	(3, 'bbb'),
-	(5, 'ccc'),
-	(7, 'ddd'),
-	(9, 'eee');
+INSERT INTO users (id, name) VALUES
+    (1,  'aaa'),
+    (3,  'bbb'),
+    (5,  'ccc'),
+    (7,  'ddd'),
+    (9,  'eee'),
+    (11, 'fff'),
+    (13, 'ggg'),
+    (15, 'hhh'),
+    (17, 'iii'),
+    (19, 'jjj'),
+    (21, 'kkk'),
+    (23, 'lll'),
+    (25, 'mmm'),
+    (27, 'nnn'),
+    (29, 'ooo'),
+    (31, 'ppp'),
+    (33, 'qqq'),
+    (35, 'rrr'),
+    (37, 'sss'),
+    (39, 'ttt'),
+    (41, 'uuu'),
+    (43, 'vvv'),
+    (45, 'www'),
+    (47, 'xxx'),
+    (49, 'yyy'),
+    (51, 'zzz');
 
 -- 전체 조회
 select * from users;
@@ -198,6 +222,8 @@ update users
 -- 전체 재조회
 select * from users;
 ```
+
+- PRIMARY KEY는 INSERT, UPDATE 모두 중복을 검사한다
 
 #### UNIQUE 제약조건 인덱스
 - PRIMARY KEY없이 Unique를 걸면 Unique컬럼에 클러스터드인덱스가 생성됨
@@ -223,7 +249,7 @@ create table users (
 ```
 
 #### 인덱스를 많이 걸면?
-- 좋지 않음. 인덱스 추가는 인덱스용 테이블을 새로 생성한다는 뜻
+- 무조건 좋지는 않음. 인덱스 추가는 인덱스용 테이블을 새로 생성한다는 뜻
 - 인덱스가 없는 상태에서 테이블에 데이터 넣으면 원테이블에만 삽입
 - 인덱스 있으면 원테이블 데이터 삽입, 인덱스테이블에도 데이터 삽입되어야
 - 익덱스 개수가 많아지면 성능은 당연히 떨어짐

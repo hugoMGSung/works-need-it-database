@@ -625,7 +625,7 @@ select p.id, p.title, p.created_at
   from posts p
   join users u on u.id = p.user_id
  where u.name like 'User000004%'
-   and p.created_at between '2024-01-01' and '2024-12-31';
+   and p.created_at between '2026-01-01' and '2026-12-31';
 
 -- 인덱스 추가
 create index idx_users_name on users(name);
@@ -636,10 +636,11 @@ select p.id, p.title, p.created_at
   from posts p
   join users u on u.id = p.user_id
  where u.name like 'User000004%'
-   and p.created_at between '2024-01-01' and '2024-12-31';
+   and p.created_at between '2026-01-01' and '2026-12-31';
 ```
 
-##### 2024년 주문데이터 조회 쿼리
+##### 2026년 주문데이터 조회 쿼리
+
 - 더미데이터 생성
 ```sql
 DROP TABLE IF EXISTS users;
@@ -697,7 +698,7 @@ select count(*) from orders;
 explain
 select *
   from orders
- where YEAR(ordered_at) = 2024
+ where YEAR(ordered_at) = 2026
  order by ordered_at
  limit 10000;   -- 0.3s, all type
 
@@ -708,7 +709,7 @@ create index idx_orders_ordered_at on orders(ordered_at);
 -- explain
 select *
   from orders
- where YEAR(ordered_at) = 2024
+ where YEAR(ordered_at) = 2026
  order by ordered_at
  limit 10000;   -- 0.3s, all type
 ```
@@ -720,21 +721,21 @@ select *
 -- explain
 select *
   from orders
- where ordered_at >= '2024-01-01 00:00:00'
-   and ordered_at < '2025-01-01 00:00:00'
+ where ordered_at >= '2026-01-01 00:00:00'
+   and ordered_at < '2027-01-01 00:00:00'
   limit 10000;   -- 0.1s, range type
  
 -- 동일쿼리
 select *
   from orders
- where ordered_at between '2024-01-01 00:00:00' 
-  and '2024-12-31 23:59:59'
+ where ordered_at between '2026-01-01 00:00:00' 
+  and '2026-12-31 23:59:59'
  limit 10000;   -- 0.1s, range type
 ```
 - 실행계획 타입이 ALL -> range 변경. 실행시간 성능 개선
 
 
-##### 24년 1학기 평균 성적이 100점 학생 조회
+##### 26년 1학기 평균 성적이 100점 학생 조회
 - 더미데이터 
 ```sql
 DROP TABLE IF EXISTS scores;
@@ -829,7 +830,7 @@ select st.student_id, st.name, avg(sc.score) as average_score
     on st.student_id = sc.student_id
  group by st.student_id, st.name, sc.year, sc.semester
 having avg(sc.score) = 100
-   and sc.year = 2024
+   and sc.year = 2026
    and sc.semester = 1;   -- 47s
 ```
 
@@ -840,7 +841,7 @@ select st.student_id, st.name, avg(sc.score) as average_score
   from students st
   join scores sc 
     on st.student_id = sc.student_id
- where sc.year = 2024
+ where sc.year = 2026
    and sc.semester = 1
  group by st.student_id, st.name, sc.year, sc.semester
 having avg(sc.score) = 100;  -- 1.381s
@@ -855,7 +856,7 @@ select st.student_id, st.name, avg(sc.score) as average_score
   from students st
   join scores sc 
     on st.student_id = sc.student_id
- where sc.year = 2024
+ where sc.year = 2026
    and sc.semester = 1
  group by st.student_id, st.name, sc.year, sc.semester
 having avg(sc.score) = 100;  -- 3.375s
