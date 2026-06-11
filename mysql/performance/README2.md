@@ -89,7 +89,7 @@ SELECT
 FROM cte;
 ```
 
-<img src="./db_0012.png" width="600">
+![alt-text](./image-5.png)
 
 ```sql
 -- 최근 3일 이내 등록된 사람들 조회
@@ -116,7 +116,7 @@ drop index idx_users_created_at on users;
 - created_at에 인덱스가 안걸려있으면 full table scan 수행
 - 인덱스 생성 후에는 range 타입으로 변경 수행
 
-<img src="./db_0013.png" width="600">
+![alt-text](./image-8.png)
 
 ##### 최근3일이내이며 Sale부서인 유저 조회
 - 이전 인덱스 삭제

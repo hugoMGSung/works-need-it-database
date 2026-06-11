@@ -86,7 +86,7 @@
     - `Ctrl + ]` : 바로 생성
 
 ### MySQL 아키텍처
-<img src="./db_0002.png" width="700">
+![alt text](image.png)
 
 1. 사용자가 DB에 SQL 요청
 2. MySQL엔진에서 `쿼리 파서`에서 분석시작
@@ -417,8 +417,7 @@ select * from users
 - department, name 모두 ASC로 정렬. 인덱스 테이블만 사용. 빠름
 - order by name DESC 인 경우는 name 인덱스를 사용못함 -> 실제테이블가서 가져옴. 상대적으로 느림
 
-인덱스 테이블&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;실제 테이블
-<img src="./db_0003.png" width="700">
+![alt text](image-1.png)
 
 ##### 멀티컬럼 인덱스 고려할 점
 ```sql
@@ -439,9 +438,8 @@ show index from users;
 ```
 
 #### 커버링 인덱스
-- SQL문을 실행할 때 모든 컬럼을 가지고 있는 인덱스
 
-<img src="./db_0004.png" width="700">
+![alt text](image-2.png)
 
 ```sql
 /* 커버링 인덱스 */
@@ -477,7 +475,7 @@ select id, created_at from users; -- 커버링인덱스 X
 
 
 ### 실행계획(중요!)
-<img src="./db_0005.png" width="700">
+![alt text](image-3.png)
 
 - 옵티마이저가 SQL문을 어떤 방식으로 처리할 지 계획하는 것
 - 비효율적인 부분을 점검. 효율적인 SQL로 실행하게 하는 목표
@@ -536,7 +534,7 @@ select * from users
         - Using temporary - 임시 테이블 사용(성능 나쁨)
         - Impossible WHERE -  WHERE 조건을 만족하는 행이 없음
 
-<img src="./db_0006.png" width="700">
+![alt text](image-4.png)
 
 | 순위 | Type            | 설명                         |
 | -- | --------------- | -------------------------- |
@@ -579,7 +577,8 @@ explain
 select * from users
  where age = 23;
 ```
-<img src="./db_0007.png" width="600">
+
+![alt text](image-5.png)
 
 - users 테이블은 id를 기준으로 인덱스 생성, 정렬되어 있음
 - age를 조회하려면 모든 테이블을 검색해야함
@@ -630,7 +629,7 @@ select * from users
 - 인덱스 생성 전 1번 쿼리 - 0.226s 소요
 - 인덱스 생성 후 2번 쿼리 - 0.019s 소요
 
-<img src="./db_0008.png" width="600">
+![alt text](image-6.png)
 
 - name을 기준으로 정렬된 인덱스를 조회. 최상단 100개만 가져옴
 - 상대적으로 ALL 보다 빠름
@@ -638,7 +637,7 @@ select * from users
 ##### const
 - 1건 데이터를 바로 찾을 수 있는 경우. 가장 효율적인 방식 중 하나. 개선 필요없음
 
-<img src="./db_0009.png" width="600">
+![alt text](image-7.png)
 
 - Unique 제약조건 구성될때 1건 찾을 경우 나머지는 볼 필요 없음
 
@@ -671,7 +670,7 @@ explain select * from users where account = 'user3@example.com';
 - between, <, >, <=, =>, in, like 등 사용시 
 - 인덱스 활용에 효율적이지만, 데이터 범위가 크면 성능 저하 발생
 
-<img src="./db_0010.png" width="600">
+![alt text](image-8.png)
 
 ```sql
 -- range
@@ -712,7 +711,7 @@ select * from users where age < 20;
 ##### ref
 - 비고유 인덱스 활용. Unique가 아닌 컬럼에 인덱스 사용할때
 
-<img src="./db_0011.png" width="600">
+![alt text](image-9.png)
 
 ```sql
 -- ref
