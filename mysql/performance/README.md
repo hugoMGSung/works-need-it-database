@@ -538,6 +538,20 @@ select * from users
 
 <img src="./db_0006.png" width="700">
 
+| 순위 | Type            | 설명                         |
+| -- | --------------- | -------------------------- |
+| 1  | system          | 테이블에 데이터 1건                |
+| 2  | `const`           | PK/Unique Index로 1건 조회     |
+| 3  | `eq_ref`          | 조인 시 PK/Unique Index 1건 조회 |
+| 4  | `ref`             | 일반 인덱스 동등조건                |
+| 5  | ref_or_null     | ref + NULL 검색 (.)              |
+| 6  | index_merge     | 여러 인덱스 병합                  |
+| 7  | unique_subquery | UNIQUE 인덱스 서브쿼리            |
+| 8  | index_subquery  | 일반 인덱스 서브쿼리                |
+| 9  | `range`           | 범위 검색                      |
+| 10 | index           | 인덱스 전체 스캔                  |
+| 11 | `ALL`             | 테이블 전체 스캔                  |
+
 - 녹색, 파란색은 가장 좋은 상태. 더이상 쿼리최적화 필요없음
 - 주황색 - 튜닝이 안될때 있음. 최적화 필요
 - 빨간색 - 반드시 최적화해야 함
