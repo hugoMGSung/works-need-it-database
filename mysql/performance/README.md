@@ -255,6 +255,8 @@ create table users (
 - 익덱스 개수가 많아지면 성능은 당연히 떨어짐
 - 데이터 수정, 삭제에도 같은 이유로 성능이 저하됨
 
+![alt text](image-10.png)
+
 ```sql
 -- 테이블 A: 인덱스가 없는 테이블
 create table test_table_no_index (
@@ -475,7 +477,8 @@ select id, created_at from users; -- 커버링인덱스 X
 
 
 ### 실행계획(중요!)
-![alt text](image-3.png)
+
+![alt text](image-12.png)
 
 - 옵티마이저가 SQL문을 어떤 방식으로 처리할 지 계획하는 것
 - 비효율적인 부분을 점검. 효율적인 SQL로 실행하게 하는 목표
