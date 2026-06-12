@@ -170,11 +170,22 @@ WHERE n <= 10000;
 
 ---
 
-#### 2-4. 주문 1000만 건 생성
+#### 2-4. 주문 200만 건 생성
 
-- TODO
+- 최초 주문 1000만 건 생성
+- 1000만건 30분 이상 소요
+- 1차 실패. 30분 넘게 INSERT 되고 사이즈 1.5G 차지
+- 계속 쿼리 실행 오래 걸리고 프로세스 체크해야 함
+- 재시작 후 DROP TABLE 쿼리만 8m 9s 소요
 
 ```sql
+SHOW FULL PROCESSLIST;
+
+KILL [PRC_NUM];
+```
+
+```sql
+/*
 INSERT INTO orders(customer_id, product_id, status, total_amount, order_date, memo)
 SELECT
     ((a.n - 1) * 1000 + b.n) % 1000000 + 1 AS customer_id,
@@ -191,6 +202,25 @@ FROM numbers a
 JOIN numbers b
 WHERE a.n <= 10000
   AND b.n <= 1000;
+  */
+INSERT INTO orders(customer_id, product_id, status, total_amount, order_date, memo)
+SELECT
+    ((a.n - 1) * 1000 + b.n) % 1000000 + 1 AS customer_id,
+    ((a.n - 1) * 1000 + b.n) % 10000 + 1 AS product_id,
+    CASE
+        WHEN ((a.n - 1) * 1000 + b.n) % 10 = 0 THEN 'CANCEL'
+        WHEN ((a.n - 1) * 1000 + b.n) % 3 = 0 THEN 'READY'
+        ELSE 'DONE'
+    END AS status,
+    1000 + (((a.n - 1) * 1000 + b.n) % 500000) AS total_amount,
+    DATE_ADD('2024-01-01',
+        INTERVAL (((a.n - 1) * 1000 + b.n) % 730) DAY) AS order_date,
+    CONCAT('주문 메모입니다. 주문번호: ',
+        ((a.n - 1) * 1000 + b.n))
+FROM numbers a
+JOIN numbers b
+WHERE a.n <= 2000
+  AND b.n <= 1000;
 ```
 
 ---
@@ -198,10 +228,85 @@ WHERE a.n <= 10000
 #### 2-5. 블랙리스트 5만 건 생성
 
 ```sql
-INSERT INTO blacklist(customer_id, reason)
+-- 1만건 밖에 안만들어짐
+/*INSERT INTO blacklist(customer_id, reason)
 SELECT
     n * 20,
     '비정상 주문 패턴'
 FROM numbers
-WHERE n <= 50000;
+WHERE n <= 50000;*/
+
+-- 변경
+INSERT INTO blacklist(customer_id, reason)
+SELECT customer_id,
+       '비정상 주문 패턴'
+FROM customers
+WHERE customer_id % 20 = 0;
 ```
+---
+
+### 3. 성능 측정방법
+
+각 실습마다 이 순서로 확인한다.
+
+```sql
+EXPLAIN
+SELECT ...
+```
+
+그리고 실제 실행 시간 확인.
+
+```sql
+EXPLAIN ANALYZE
+SELECT ...
+```
+
+또는 Workbench / DBeaver에서 실행 시간 확인.
+
+---
+
+### 4. 실습 1
+
+#### OR → UNION ALL
+
+##### 나쁜 예
+
+```sql
+-- EXPLAIN ANALYZE
+SELECT *
+FROM orders
+WHERE customer_id = 100
+   OR product_id = 500;
+```
+
+문제점:
+
+- OR 조건 때문에 인덱스 선택이 애매해짐
+- 경우에 따라 index_merge 또는 많은 범위 스캔 발생
+- 데이터가 많으면 느려질 수 있음
+
+##### 개선 예
+
+```sql
+EXPLAIN ANALYZE
+SELECT *
+FROM orders
+WHERE customer_id = 100
+UNION ALL
+SELECT *
+FROM orders
+WHERE product_id = 500;
+```
+
+장점:
+
+- customer_id 조건은 idx_customer_id 사용
+- product_id 조건은 idx_product_id 사용
+- 각각의 인덱스를 명확하게 사용 가능
+
+
+---
+
+### 5. 실습 2
+
+여기서 부터 계속...
