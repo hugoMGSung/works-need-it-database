@@ -32,7 +32,7 @@ with recursive cte (n) as
 	 where n < 1000000 -- 생성하고 싶은 더미 데이터의 개수
 )
 select CONCAT('User_', LPAD(n, 7, '0')),   -- 'User' 다음에 7자리 숫자로 구성된 이름 생성
-       FLOOR(1 + RAND() * 1000) as age    -- 1부터 1000 사이의 난수로 나이 생성
+       FLOOR(1 + RAND() * 100) as age    -- 1부터 1000 사이의 난수로 나이 생성
   from cte;
 
 -- 데이터 확인
