@@ -5,9 +5,9 @@
 
 ---
 
-# 1. 함수 사용으로 인한 인덱스 무력화
+## 1. 함수 사용으로 인한 인덱스 무력화
 
-## 주문 100만 건 생성
+### 주문 100만 건 생성
 
 - orders 테이블에 100만 건 생성 후 테스트
 ```sql
@@ -50,7 +50,7 @@ SELECT COUNT(*)
 FROM orders;
 ```
 
-### 나쁜 예
+#### 나쁜 예
 
 ```sql
 EXPLAIN
@@ -66,14 +66,14 @@ type : ALL
 key  : NULL
 ```
 
-### 인덱스 생성
+#### 인덱스 생성
 
 ```sql
 CREATE INDEX idx_orders_ordered_at
 ON orders(ordered_at);
 ```
 
-### 여전히 느림
+#### 여전히 느림
 
 ```sql
 EXPLAIN
@@ -84,7 +84,7 @@ WHERE YEAR(ordered_at) = 2026;
 
 YEAR() 함수 때문에 인덱스 사용 불가
 
-### 좋은 예
+#### 좋은 예
 
 ```sql
 EXPLAIN
@@ -103,7 +103,7 @@ key  : idx_orders_ordered_at
 
 ---
 
-# 2. HAVING 절 튜닝
+## 2. HAVING 절 튜닝
 
 ### 테이블 생성
 
@@ -128,7 +128,7 @@ CREATE TABLE scores (
 );
 ```
 
-### 100만건 학생/성적 데이터 생성
+#### 100만건 학생/성적 데이터 생성
 
 ```sql
 SET SESSION cte_max_recursion_depth = 1000000;
@@ -170,7 +170,7 @@ SELECT
 FROM cte;
 ```
 
-### 나쁜 예
+#### 나쁜 예
 
 ```sql
 SELECT st.student_id,
@@ -186,7 +186,7 @@ HAVING AVG(sc.score)=100
 
 실행시간 : 약 40초 이상
 
-### 개선
+#### 개선
 
 ```sql
 SELECT st.student_id,
@@ -204,7 +204,7 @@ HAVING AVG(sc.score)=100;
 
 ---
 
-# 3. Covering Index
+## 3. Covering Index
 
 테이블 접근 없이 인덱스만 읽기
 
@@ -230,7 +230,7 @@ Extra : Using index
 
 ---
 
-# 4. Composite Index 순서
+## 4. Composite Index 순서
 
 -- TODO
 
@@ -241,7 +241,7 @@ CREATE INDEX idx_year_semester_student
 ON scores(year, semester, student_id);
 ```
 
-### 좋은 쿼리
+#### 좋은 쿼리
 
 ```sql
 SELECT *
@@ -250,7 +250,7 @@ WHERE year=2026
   AND semester=1;
 ```
 
-### 나쁜 쿼리
+#### 나쁜 쿼리
 
 ```sql
 SELECT *
@@ -262,7 +262,7 @@ WHERE semester=1;
 
 ---
 
-# 5. Keyset Pagination
+## 5. Keyset Pagination
 
 ### OFFSET 방식
 
@@ -287,7 +287,7 @@ LIMIT 20;
 
 ---
 
-# 6. Histogram 실습
+## 6. Histogram 실습
 
 데이터 분포
 
@@ -304,7 +304,7 @@ ANALYZE TABLE customers
 UPDATE HISTOGRAM ON city;
 ```
 
-### 확인
+#### 확인
 
 ```sql
 SELECT *
@@ -315,7 +315,7 @@ FROM information_schema.COLUMN_STATISTICS;
 
 ---
 
-# 7. Invisible Index
+## 7. Invisible Index
 
 ### 인덱스 생성
 
@@ -324,14 +324,14 @@ CREATE INDEX idx_city
 ON customers(city);
 ```
 
-### 숨기기
+#### 숨기기
 
 ```sql
 ALTER TABLE customers
 ALTER INDEX idx_city INVISIBLE;
 ```
 
-### 복구
+#### 복구
 
 ```sql
 ALTER TABLE customers
@@ -342,7 +342,7 @@ ALTER INDEX idx_city VISIBLE;
 
 ---
 
-# 8. Clustered Index
+## 8. Clustered Index
 
 ```sql
 CREATE TABLE members
@@ -358,7 +358,7 @@ PK 조회가 가장 빠름
 
 ---
 
-# 9. JOIN 튜닝
+## 9. JOIN 튜닝
 
 ### 나쁜 예
 
@@ -392,7 +392,7 @@ type : ref
 
 ---
 
-# 10. 좋아요 TOP1000 게시글 조회
+## 10. 좋아요 TOP1000 게시글 조회
 
 ### 일반 방식
 
@@ -427,7 +427,7 @@ ON p.id=x.post_id;
 
 ---
 
-# 11. Deadlock 분석
+## 11. Deadlock 분석
 
 ```sql
 SHOW ENGINE INNODB STATUS;
@@ -441,7 +441,7 @@ SHOW ENGINE INNODB STATUS;
 
 ---
 
-# 12. Performance Schema
+## 12. Performance Schema
 
 가장 느린 SQL
 
@@ -463,7 +463,7 @@ LIMIT 10;
 
 ---
 
-# 13. Partitioning
+## 13. Partitioning
 
 - 하나의 큰 테이블을 논리적으로 나누어 저장하는 기능
 - 겉으로는 하나의 테이블처럼 보이지만 실제 여러개의 물리적 저장 단위로 나눠

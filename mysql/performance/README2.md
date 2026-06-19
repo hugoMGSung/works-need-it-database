@@ -3,7 +3,7 @@
 ## 개요
 - 데이터베이스 데이터를 사용하는데 처리시간을 줄이기위한 방안
 
-### SQL 튜닝
+## SQL 튜닝
 - 더미데이터 생성
 
 ```sql
@@ -403,7 +403,7 @@ create index idx_users_created_at on users(created_at);
     - created_at : 날짜별로 정렬. 원본테이블에서 Salary위치를 찾는 것이 위의 경우보다 효율적
 - ORDER BY 컬럼보다 `WHERE절 컬럼`에 인덱스가 성능향상에 도움이 됨. 항상 일치하지는 않음
 
-#### HAVING절 튜닝
+### HAVING절 튜닝
 - 테이블 생성 및 더미데이터
 ```sql
 DROP TABLE IF EXISTS users;
@@ -450,7 +450,7 @@ FROM cte;
 select count(*) from users;
 ```
 
-##### 기본 실행쿼리
+#### 기본 실행쿼리
 ```sql
 -- explain analyze
 select age, MAX(salary) from users
@@ -465,7 +465,7 @@ having age >= 20 and age < 30;
 ```
 - 전체 200만건 조회 후 통계테이블 생성, 통계테이블 스캔 후 필터링
 
-##### 잘못된 인덱스 생성
+#### 잘못된 인덱스 생성
 ```sql
 create index idx_users_age on users(age);
 
@@ -483,7 +483,7 @@ having age >= 20 and age < 30;
 - age인덱스 테이블과 salary 집계와는 관계없음. 추가적인 테이블 스캔 + 집계 발생
 - 나이로는 정렬되어 있지만 salary로 정렬이 안되어 있음
 
-##### 멀티인덱스 생성
+#### 멀티인덱스 생성
 ```sql
 -- 멀티인덱스 사용
 drop index idx_users_age on users;
@@ -503,7 +503,7 @@ having age >= 20 and age < 30;
 - age 오름차순, salary 내림차순으로 미리 정렬되어 있음
 - 조회하고자 하는 방식대로 인덱스 생성되어 있음
 
-##### HAVING -> WHERE절로 변경
+#### HAVING -> WHERE절로 변경
 ```sql
 -- HAVING 대신 WHERE절 사용 : AGGREGATE(집계)함수의 수치를 필터링시 사용
 -- explain analyze
@@ -520,45 +520,45 @@ select age, MAX(salary) from users
 - 나이를 비교하는 구문은 having에 쓰는 것 자체가 비효율적
 
 
-#### SQL 튜닝 정리
+### SQL 튜닝 정리
 
-##### 좌변연산을 하지말 것
+#### 좌변연산을 하지말 것
 - 인덱스가 걸려있는 컬럼값을 함수나, 연산 등을 하지 말아라
 - YEAR, MONTH() 함수를 쓴다고 엄청나게 느려지진 않음(SQL엔진 최적화 때문)
 
-##### OR대신에 UNION을 사용하라
+#### OR대신에 UNION을 사용하라
 - OR연산은 테이블 스캔시 모든 조건을 확인해야 함
 - UNION은 각각의 쿼리가 조건을 필터링한 뒤 합치는 작업만 수행
 - MySQL 엔진 버전업되면서 많이 상쇄되었음. 많은 효과는 없음
 
-##### 필요한 row만 선택하라
+#### 필요한 row만 선택하라
 - 처음부터 작은 row를 선별해서 처리하는 것이 가장 효과적
 
-##### 서브쿼리보다는 JOIN을 사용하라
+#### 서브쿼리보다는 JOIN을 사용하라
 - 서브쿼리는 Full table scan을 수행
 - JOIN은 인덱스가 걸려있는 테이블을 합치는 작업
 - 같은 기능 쿼리라면 SubQuery를 JOIN으로 변경할 것
 
-##### 서브쿼리를 사용, 필요한 데이터만 추출
+#### 서브쿼리를 사용, 필요한 데이터만 추출
 - 불필요한 컬럼은 제거하고 필요한 컬럼만으로 임시테이블을 생성
 - 시스템 자원을 효율적으로 활용
 
-##### 집계, 분석함수로 데이터 줄이기
+#### 집계, 분석함수로 데이터 줄이기
 - ROW_NUMBER()로 랭킹을 사용, 필요 데이터만 limit등으로 추출 후 처리
 
-##### 문자열 비교시 % 
+#### 문자열 비교시 % 
 - 와일드카드로 LIKE 사용시 '%0900%'는 최악
 - '%0900' 식의 조회는 모덴 가능한 문자열 조합을 다 검색
 - '0900%' 와일드카드로 끝나는 비교는 빠르게 데이터를 조회
 
-##### 계산값은 미리 저장할 것
+#### 계산값은 미리 저장할 것
 - 통계, 취합 후 리포트 데이터들은 임시 통계테이블에 보관
 - 업무시간 이후 새벽등에 배치를 통해서 통계테이블을 생성
 
 
-#### 튜닝 연습
+### 튜닝 연습
 
-##### 사용자 이름으로 특정 기간에 작성된 글 검색
+#### 사용자 이름으로 특정 기간에 작성된 글 검색
 ```sql
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
@@ -639,7 +639,7 @@ select p.id, p.title, p.created_at
    and p.created_at between '2026-01-01' and '2026-12-31';
 ```
 
-##### 2026년 주문데이터 조회 쿼리
+#### 2026년 주문데이터 조회 쿼리
 
 - 더미데이터 생성
 ```sql
@@ -735,7 +735,7 @@ select *
 - 실행계획 타입이 ALL -> range 변경. 실행시간 성능 개선
 
 
-##### 26년 1학기 평균 성적이 100점 학생 조회
+#### 26년 1학기 평균 성적이 100점 학생 조회
 - 더미데이터 
 ```sql
 DROP TABLE IF EXISTS scores;
@@ -864,7 +864,7 @@ having avg(sc.score) = 100;  -- 3.375s
 drop index idx_scores_year_semester on scores;
 ```
 
-##### 좋아요 내림차순으로 게시글 조회 
+#### 좋아요 내림차순으로 게시글 조회 
 - 더미데이터
 ```sql
 DROP TABLE IF EXISTS likes;

@@ -21,7 +21,7 @@
 |**샤딩**|데이터를 여러 DB 서버에 나누어 저장|
 |**스케일업**|CPU, Memory, SSD 등 하드웨어 사양을 업그레이드|
 
-### 최적화 방법
+## 최적화 방법
 1. 인덱스 최적화
     - 인덱스는 데이터 검색 속도를 높여주지만, 너무 많은 인덱스는 오히려 성능 저하를 초래할 수 있다.
     - PK에 자동으로 생성된다.
@@ -106,11 +106,11 @@
 6. MySQL엔진에서 정렬, 필터링 처리한뒤 사용자에 결과리턴
 
 
-### 인덱스 성능 측정
+## 인덱스 성능 측정
 
-#### 인덱스 테스트
+### 인덱스 테스트
 
-##### 예제 테이블 생성
+#### 예제 테이블 생성
 ```sql
 -- 기존 테이블 삭제
 drop table if exists users;
@@ -123,7 +123,7 @@ create table users (
 );
 ```
 
-##### 더미데이터 생성
+#### 더미데이터 생성
 - `100만건`으로 현재 컴퓨터에서는 비교 어려움
 ```sql
 /* CTE 사용방식 */
@@ -147,7 +147,7 @@ select * from users;
 
 - count()에서의 영향이 지대함
 
-##### 인덱스 생성
+#### 인덱스 생성
 ```sql
 /* 인덱스 */
 select * 
@@ -476,14 +476,14 @@ select id, created_at from users; -- 커버링인덱스 X
 ```
 
 
-### 실행계획(중요!)
+## 실행계획(중요!)
 
 ![alt text](image-12.png)
 
 - 옵티마이저가 SQL문을 어떤 방식으로 처리할 지 계획하는 것
 - 비효율적인 부분을 점검. 효율적인 SQL로 실행하게 하는 목표
 
-#### 실행계획 확인 쿼리
+### 실행계획 확인 쿼리
 ```sql
 -- 실행계획 조회 출력
 explain /* 작성한 쿼리문 */
@@ -495,9 +495,9 @@ explain analyze /* 작성한 쿼리문 */
 explain format=JSON /* 작성한 쿼리문 */
 ```
 
-#### 실행계획 예제
+### 실행계획 예제
 
-##### 기본 실행계획
+#### 기본 실행계획
 ```sql
 -- 실행계획 조회
 explain
@@ -557,7 +557,7 @@ select * from users
 - 주황색 - 튜닝이 안될때 있음. 최적화 필요
 - 빨간색 - 반드시 최적화해야 함
 
-##### 상세 실행계획
+#### 상세 실행계획
 ```sql
 explain analyze
 select * from users
@@ -570,9 +570,9 @@ select * from users
     -> Table scan on users  (cost=0.95 rows=7) (actual time=0.039..0.0446 rows=7 loops=1)
 ```
 
-#### 실행계획 type별 의미 분석
+### 실행계획 type별 의미 분석
 
-##### ALL
+#### ALL
 - 테이블 풀스캔하겠다는 의미
 
 ```sql
@@ -586,7 +586,7 @@ select * from users
 - users 테이블은 id를 기준으로 인덱스 생성, 정렬되어 있음
 - age를 조회하려면 모든 테이블을 검색해야함
 
-##### index
+#### index
 - Full Index scan. 인덱스 테이블을 끝가지 다 뒤져서 데이터 찾는 방식
 - Full Table scan보다는 효율적이지만 인덱스테이블을 전부 읽음. 상대적 비효율
 
@@ -637,7 +637,7 @@ select * from users
 - name을 기준으로 정렬된 인덱스를 조회. 최상단 100개만 가져옴
 - 상대적으로 ALL 보다 빠름
 
-##### const
+#### const
 - 1건 데이터를 바로 찾을 수 있는 경우. 가장 효율적인 방식 중 하나. 개선 필요없음
 
 ![alt text](image-7.png)
@@ -668,7 +668,7 @@ explain select * from users where id = 3;
 explain select * from users where account = 'user3@example.com';
 ```
 
-##### range
+#### range
 - 인덱스 범위 스캔. 인덱스 활용, 범위형태 조회를 할때
 - between, <, >, <=, =>, in, like 등 사용시 
 - 인덱스 활용에 효율적이지만, 데이터 범위가 크면 성능 저하 발생
@@ -711,7 +711,7 @@ explain
 select * from users where age < 20;
 ```
 
-##### ref
+#### ref
 - 비고유 인덱스 활용. Unique가 아닌 컬럼에 인덱스 사용할때
 
 ![alt text](image-9.png)
@@ -742,7 +742,7 @@ explain
 select * from users where name = '애슐리';
 ```
 
-##### 이외
+#### 이외
 - eq_ref - 조인 시 기준 테이블과 자식 테이블 접근해서 고유인덱스나 기본키로 1건만 가져올때. 매우 빠름. 최적화 필요없음
 - ref_or_null - NULL도 고려하는 인덱스 접근. 중간속도
 - index_merge - 여러 인덱스를 동시에 사용. 둘 이상의 인덱스를 조합해서 조건을 처리하는 방식. 쿼리마다 성능이 다름
